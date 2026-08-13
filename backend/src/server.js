@@ -53,6 +53,12 @@ mongoose.set('strictQuery', false);
 
 const PORT = process.env.PORT || 5000;
 
+// Start server first
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+// Connect to database (non-blocking)
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -62,11 +68,10 @@ mongoose.connect(dbUrl, {
 })
   .then(() => {
     console.log("✅ DB Connected Successfully");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
   .catch(err => {
     console.error("❌ DB Connection Error:", err);
-    process.exit(1);
+    console.error("⚠️  Server is still running but database is unavailable");
   });
 
 mongoose.connection.on('connected', () => {
@@ -75,6 +80,18 @@ mongoose.connection.on('connected', () => {
 
 mongoose.connection.on('error', (err) => {
   console.error('Mongoose default connection error:', err);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server...');
+  server.close(() => {
+    console.log('Server closed');
+    mongoose.connection.close(false, () => {
+      console.log('Mongoose connection closed');
+      process.exit(0);
+    });
+  });
 });
 
 // Error handling middleware
