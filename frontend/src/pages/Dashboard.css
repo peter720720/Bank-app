@@ -424,7 +424,7 @@ body.light-mode .amount.positive { color: #16a34a; }
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
   }
 
   /* Tighten and structure button profiles */
@@ -438,6 +438,11 @@ body.light-mode .amount.positive { color: #16a34a; }
 
   .settings-dropdown-wrapper {
     flex: 1;
+  }
+
+  .header-right > .btn-primary {
+    flex: 0 0 100%;
+    width: 100%;
   }
 
   .settings-list-popup {
